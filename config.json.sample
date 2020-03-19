@@ -7,13 +7,15 @@
     "repo": [
       {
         "name": "pics",
-        "last_update": null
-        "dirname": null
+        "dirname": null,
+        "limit_requests": 50,
+        "last_update": 1584661281.0
       },
       {
         "name": "gif",
-        "last_update": null
-        "dirname": "animated"
+        "dirname": "animated",
+        "limit_requests": 10,
+        "last_update": 1584660564.0
       }
     ]
   }
