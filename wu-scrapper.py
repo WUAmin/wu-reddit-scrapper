@@ -12,7 +12,7 @@ from prawcore.exceptions import ResponseException
 
 
 class App:
-    version = "1.0"
+    version = "1.1"
     config: dict = None
 
 
@@ -63,7 +63,7 @@ def get_reddit_submissions(repo, limit=50) -> list:
     try:
         r = praw.Reddit(client_id=App.config['reddit']['id'], client_secret=App.config['reddit']['secret'],
                         user_agent=App.config['reddit']['name'])
-        submissions = r.subreddit(repo['name']).new(limit=limit)
+        submissions = r.subreddit(repo['subreddit']).new(limit=limit)
         return list(submissions)
     except Redirect:
         print("❌ Invalid Subreddit!")

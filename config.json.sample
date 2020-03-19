@@ -1,23 +1,23 @@
 {
-    "version": "1.0",
+    "version": "1.1",
     "download_path": "Downloads",
     "reddit": {
-    "id": "YOUR-REDDIT-PERSONAL-USE-SCRIPT",
-    "secret": "YOUR-REDDIT-API-SECRET",
-    "name": "YOUR-REDDIT-API-NAME",
-    "repo": [
-      {
-        "name": "pics",
-        "dirname": null,
-        "limit_requests": 50,
-        "last_update": 1584661281.0
-      },
-      {
-        "name": "gif",
-        "dirname": "animated",
-        "limit_requests": 10,
-        "last_update": 1584660564.0
-      }
-    ]
-  }
+        "id": "YOUR-REDDIT-PERSONAL-USE-SCRIPT",
+        "secret": "YOUR-REDDIT-API-SECRET",
+        "name": "YOUR-REDDIT-API-NAME",
+        "repo": [
+            {
+                "subreddit": "pics",
+                "dirname": null,
+                "limit_requests": 50,
+                "last_update": 1584661281.0
+            },
+            {
+                "subreddit": "gif",
+                "dirname": "animated",
+                "limit_requests": 10,
+                "last_update": 1584660564.0
+            }
+        ]
+    }
 }
