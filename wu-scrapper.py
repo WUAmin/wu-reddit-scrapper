@@ -2,7 +2,9 @@ import argparse
 import datetime
 import json
 import os
+import re
 import shutil
+import urllib.request
 from urllib.error import HTTPError
 
 import praw
@@ -12,7 +14,7 @@ from prawcore.exceptions import ResponseException
 
 
 class App:
-    version = "1.2"
+    version = "1.3"
     config: dict = None
 
 
@@ -43,17 +45,28 @@ def _download_media_hook(d):
 
 def download_media(submission, dir_to_save: str):
     try:
-        # # Prepare filename
-        # filepath: str = '{:.0f}_{}'.format(submission.created,
-        #                                    re.sub(r"[^a-zA-Z\ 0-9\-\_\+\=\.\,\[\]\(\)]", "", submission.title))
-        # filepath = os.path.join(dir_to_save, filepath[:250])
-
-        # Download using youtube-dl
-        with youtube_dl.YoutubeDL({}) as ydl:
-            result = ydl.extract_info(submission.url, download=False)
-            filepath = ydl.prepare_filename(result)
+        NORMAL_DL_EXT = [".jpg", ".jpeg", ".png", ".gif", ".gifv"]
+        filename, ext = os.path.splitext(submission.url)
+        if ext.lower() in NORMAL_DL_EXT:
+            filepath = os.path.split(submission.url)[1]
             filepath = '{:.0f}_{}'.format(submission.created, filepath)
             filepath = os.path.join(dir_to_save, filepath)
+            # Download the file from `url` and save it locally under `file_name`:
+            with urllib.request.urlopen(submission.url) as response, open(filepath, 'wb') as out_file:
+                shutil.copyfileobj(response, out_file)
+        else:
+            # Download using youtube-dl
+            # with youtube_dl.YoutubeDL({}) as ydl:
+            #     result = ydl.extract_info(submission.url, download=False)
+            #     filepath = ydl.prepare_filename(result)
+            #     filepath = '{:.0f}_{}'.format(submission.created, filepath)
+            #     filepath = os.path.join(dir_to_save, filepath)
+
+            # # Prepare filename
+            filepath: str = '{:.0f}_{}'.format(submission.created,
+                                               re.sub(r"[^a-zA-Z\ 0-9\-\_\+\=\.\,\[\]\(\)]", "", submission.title))
+            filepath = os.path.join(dir_to_save, filepath[:200])
+
             ydl_opts = {
                 # 'outtmpl': '{}.%(ext)s'.format(filepath),
                 'outtmpl': filepath,
@@ -106,6 +119,7 @@ def setup_download_path(dirpath: str):
         except Exception as e:
             print("❌ Error can not create directory `{}`: {}".format(dirpath, str(e)))
 
+
 def parse_arg():
     parser = argparse.ArgumentParser(description='Scrape reddit')
     parser.add_argument('-c', '--config', default="config.json",
@@ -132,7 +146,7 @@ def main():
 
     for repo in App.config['reddit']['repo']:
         dl_dirpath = App.config['download_path']
-        # Check/Create repo directory on Dwnloadpath
+        # Check/Create repo directory on Download path
         if 'dirname' in repo:
             if repo['dirname']:
                 dl_dirpath = os.path.join(dl_dirpath, repo['dirname'])
