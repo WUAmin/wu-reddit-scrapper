@@ -12,6 +12,7 @@ from prawcore.exceptions import ResponseException
 
 
 class App:
+    version = "1.0"
     config: dict = None
 
 
@@ -105,6 +106,14 @@ def main():
     # Load config file
     config_filepath = parse_arg()
     App.config = load_config(config_filepath)
+
+    # Check if version of script match version of config
+    if App.version != App.config['version']:
+        print("\n⚠️️ Script version is `{}` but config version is `{}`."
+              " check your configuration with script sample again,"
+              " and update configuration version to match the script version.\nScript Version: {}\n"
+              .format(App.version, App.config['version'], App.version))
+        exit(1)
 
     # Check/Create Download path
     setup_download_path(App.config['download_path'])
