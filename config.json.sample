@@ -1,9 +1,19 @@
 {
-  "reddit": {
+    "download_path": "Downloads",
+    "reddit": {
+    "id": "YOUR-REDDIT-PERSONAL-USE-SCRIPT",
+    "secret": "YOUR-REDDIT-API-SECRET",
+    "name": "YOUR-REDDIT-API-NAME",
     "repo": [
       {
-        "name": "example",
+        "name": "pics",
         "last_update": null
+        "dirname": null
+      },
+      {
+        "name": "gif",
+        "last_update": null
+        "dirname": "animated"
       }
     ]
   }
