@@ -1,0 +1,3 @@
+argparse
+praw
+youtube_dl
