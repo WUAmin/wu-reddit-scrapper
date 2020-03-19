@@ -1,5 +1,5 @@
 {
-    "version": "1.1",
+    "version": "1.2",
     "download_path": "Downloads",
     "reddit": {
         "id": "YOUR-REDDIT-PERSONAL-USE-SCRIPT",
@@ -8,13 +8,19 @@
         "repo": [
             {
                 "subreddit": "pics",
-                "dirname": null,
                 "limit_requests": 50,
                 "last_update": 1584661281.0
             },
             {
                 "subreddit": "gif",
                 "dirname": "animated",
+                "limit_requests": 10,
+                "last_update": 1584660564.0
+            },
+            {
+                "subreddit": "gif",
+                "dirname": "animated",
+                "copy_to": ["folder1", "folder2"],
                 "limit_requests": 10,
                 "last_update": 1584660564.0
             }

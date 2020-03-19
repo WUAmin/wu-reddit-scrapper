@@ -12,7 +12,7 @@ You can use `-c /path/to/config.json` to run script using different configuratio
 ####Config sample:
 ```json
 {
-    "version": "1.1",
+    "version": "1.2",
     "download_path": "Downloads",
     "reddit": {
         "id": "YOUR-REDDIT-PERSONAL-USE-SCRIPT",
@@ -28,6 +28,7 @@ You can use `-c /path/to/config.json` to run script using different configuratio
             {
                 "subreddit": "gif",
                 "dirname": "animated",
+                "copy_to": ["folder1", "folder2"],
                 "limit_requests": 10,
                 "last_update": 1584660564.0
             }
@@ -37,13 +38,14 @@ You can use `-c /path/to/config.json` to run script using different configuratio
 ```
 |Key             | Description     |
 |----------------|-----------------|
-|`version`       | on every script update, version will change. and script will notice you to recheck your configuration with `config.json.sample` and update it. to make sure config match the script. |
-|`download_path` | path to download directory for media files. |
+|`version`       | On every script update, version will change. and script will notice you to recheck your configuration with `config.json.sample` and update it. to make sure config match the script. |
+|`download_path` | Path to download directory for media files. |
 |`id`            | "Personal use script" key in your Reddit account [apps page](https://www.reddit.com/prefs/apps)  |
 |`secret`        | "secret" key in your Reddit account [apps page](https://www.reddit.com/prefs/apps)  |
 |`name`          | "name" of your API in your Reddit account [apps page](https://www.reddit.com/prefs/apps)  |
-|`subreddit`     | name of subreddit. for example "pics" for https://www.reddit.com/r/pics/|
+|`subreddit`     | Name of subreddit. for example "pics" for https://www.reddit.com/r/pics/|
 |`direname`      | "null" if you want files go to root of `download_path`. you can specify a directory name inside `download_path`. like "animated" in example |
-|`limit_requests`| number of submissions to get for this subreddit. |
-|`last_update`| Script will update it automatically. store the last submission downloaded from this subreddit for avoiding duplicate media file |
+|`copy_to`       | Can be absence or "null". you can specify a list of directory name inside `download_path` to copy downloaded files to there too. |
+|`limit_requests`| Number of submissions to get for this subreddit. |
+|`last_update`   | Script will update it automatically. store the last submission downloaded from this subreddit for avoiding duplicate media file |
 

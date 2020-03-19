@@ -2,7 +2,7 @@ import argparse
 import datetime
 import json
 import os
-import re
+import shutil
 from urllib.error import HTTPError
 
 import praw
@@ -12,7 +12,7 @@ from prawcore.exceptions import ResponseException
 
 
 class App:
-    version = "1.1"
+    version = "1.2"
     config: dict = None
 
 
@@ -43,20 +43,30 @@ def _download_media_hook(d):
 
 def download_media(submission, dir_to_save: str):
     try:
-        # Prepare filename
-        filepath: str = '{:.0f}_{}'.format(submission.created,
-                                           re.sub(r"[^a-zA-Z\ 0-9\-\_\+\=\.\,\[\]\(\)]", "", submission.title))
-        filepath = os.path.join(dir_to_save, filepath[:250])
+        # # Prepare filename
+        # filepath: str = '{:.0f}_{}'.format(submission.created,
+        #                                    re.sub(r"[^a-zA-Z\ 0-9\-\_\+\=\.\,\[\]\(\)]", "", submission.title))
+        # filepath = os.path.join(dir_to_save, filepath[:250])
 
         # Download using youtube-dl
-        ydl_opts = {
-            'outtmpl': '{}.%(ext)s'.format(filepath),
-            'progress_hooks': [_download_media_hook],
-        }
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([submission.url])
+        with youtube_dl.YoutubeDL({}) as ydl:
+            result = ydl.extract_info(submission.url, download=False)
+            filepath = ydl.prepare_filename(result)
+            filepath = '{:.0f}_{}'.format(submission.created, filepath)
+            filepath = os.path.join(dir_to_save, filepath)
+            ydl_opts = {
+                # 'outtmpl': '{}.%(ext)s'.format(filepath),
+                'outtmpl': filepath,
+                'progress_hooks': [_download_media_hook],
+            }
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl2:
+                ydl2.download([submission.url])
+                # result = ydl.extract_info(submission.url, download=False)
+                # filepath = ydl.prepare_filename(result)
     except Exception as e:
         print("❌ Error downloading reddit submission using youtube-dl: {}".format(str(e)))
+        return None
+    return filepath
 
 
 def get_reddit_submissions(repo, limit=50) -> list:
@@ -90,9 +100,11 @@ def setup_download_path(dirpath: str):
                     except Exception as e:
                         print("❌ Error can not remove temp file `{}`: {}".format(dirpath, f, str(e)))
     else:
-        os.mkdir(dirpath)
-        print("✅ Create `{}` directory.".format(dirpath))
-
+        try:
+            os.mkdir(dirpath)
+            print("✅ Create `{}` directory.".format(dirpath))
+        except Exception as e:
+            print("❌ Error can not create directory `{}`: {}".format(dirpath, str(e)))
 
 def parse_arg():
     parser = argparse.ArgumentParser(description='Scrape reddit')
@@ -121,9 +133,14 @@ def main():
     for repo in App.config['reddit']['repo']:
         dl_dirpath = App.config['download_path']
         # Check/Create repo directory on Dwnloadpath
-        if repo['dirname']:
-            dl_dirpath = os.path.join(dl_dirpath, repo['dirname'])
-            setup_download_path(dl_dirpath)
+        if 'dirname' in repo:
+            if repo['dirname']:
+                dl_dirpath = os.path.join(dl_dirpath, repo['dirname'])
+                setup_download_path(dl_dirpath)
+        if 'copy_to' in repo:
+            if isinstance(repo['copy_to'], list):
+                for copy_to in repo['copy_to']:
+                    setup_download_path(os.path.join(App.config['download_path'], copy_to))
 
         limit = 50
         if repo['limit_requests']:
@@ -141,7 +158,15 @@ def main():
                     print("⏭️ Skipped (Downloaded before)")
                     continue
 
-            download_media(submission=submission, dir_to_save=dl_dirpath)
+            file_path = download_media(submission=submission, dir_to_save=dl_dirpath)
+            if 'copy_to' in repo:
+                if isinstance(repo['copy_to'], list):
+                    if file_path:
+                        for copy_to in repo['copy_to']:
+                            try:
+                                shutil.copy2(file_path, os.path.join(App.config['download_path'], copy_to))
+                            except Exception as e:
+                                print("❌ Error can copy `{}` to copy_to of `{}`: {}".format(file_path, copy_to, str(e)))
             repo['last_update'] = submission.created
             save_config(config_filepath, App.config)
 
