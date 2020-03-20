@@ -68,8 +68,8 @@ def download_media(submission, dir_to_save: str):
             filepath = os.path.join(dir_to_save, filepath[:200])
 
             ydl_opts = {
-                # 'outtmpl': '{}.%(ext)s'.format(filepath),
-                'outtmpl': filepath,
+                'outtmpl': '{}.%(ext)s'.format(filepath),
+                # 'outtmpl': filepath,
                 'progress_hooks': [_download_media_hook],
             }
             with youtube_dl.YoutubeDL(ydl_opts) as ydl2:
